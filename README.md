@@ -131,6 +131,8 @@ How the dashboard setup should look like:
 
 ## III. App install
 
+(This project uses webpack. You may have to run `npx webpack` to begin with.)
+
 `npm install`
 
 Create a file called `.env` in the root directory with two keys. Replace the `CUMULIO_API_KEY` & `CUMULIO_API_TOKEN` with one from your Cumul.io account. You can create one in your Profile settings under API Tokens:
@@ -140,12 +142,12 @@ CUMULIO_API_KEY=XXX
 CUMULIO_API_TOKEN=XXX
 ```
 
-## IV. Adapt `server.js` according to your needs
+## IV. Adapt `server.js` and `dashboardClient.js` according to your needs
 
-- If you have chosen different tags to tag regular and drillthrough dashboards, you will need to change the consts `tag` and `drillthroughtag`.
-- Optionally, you can disable custom theming and/or custom css, by setting the consts `custom_theme` and `custom_css` to false. You can also specify a specific image and/or text widget chart id where the logo and first name of the client should appear, otherwise it will add it to all image and text widgets.
+- If you have chosen different tags to tag regular and drillthrough dashboards, you will need to change the `tag` and `drillthroughtag` in `dashboardClient.js`.
+- Optionally, you can disable custom theming and/or custom css, by setting the `custom_theme` and `custom_css` in `server.js` to false. You can also specify a specific image and/or text widget chart id where the logo and first name of the client should appear, otherwise it will add it to all image and text widgets.
 
-## V. Adapt `public/js/app.js` according to your needs
+## V. Adapt `src/app.js` according to your needs
 
 - If you want, you can change the styling of the loader on top.
 - You will have to add your desired functionality of your custom event(s) under `Cumulio.onCustomEvent((e)=>{...}`. This is where you can assign the selected values to the corresponding parameters.
