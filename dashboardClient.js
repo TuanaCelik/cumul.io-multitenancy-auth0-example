@@ -12,17 +12,7 @@ const DashboardClient = class {
       return;
     if (this.dashboards.drill_throughs.length > 0) return;
 
-    await allDashboards.rows.forEach(async (row) => {
-      const tags = await row.tags.map((entry) => {
-        return entry.tag;
-      });
-
-      if (!tags.includes(this.drillthroughtag)) {
-        this.dashboards.tabs.push({ id: row.id, name: row.name });
-      } else {
-        this.getExtraTags(row);
-      }
-    });
+    await this.groupDashboards(allDashboards.rows);
 
     console.log(
       "Successfully fetched " +
@@ -52,6 +42,20 @@ const DashboardClient = class {
           attributes: ["tag"],
         },
       ],
+    });
+  }
+
+  groupDashboards(allDashboards) {
+    allDashboards.forEach(async (dashboard) => {
+      const tags = await dashboard.tags.map((entry) => {
+        return entry.tag;
+      });
+
+      if (!tags.includes(this.drillthroughtag)) {
+        this.dashboards.tabs.push({ id: dashboard.id, name: dashboard.name });
+      } else {
+        this.getExtraTags(dashboard);
+      }
     });
   }
 
