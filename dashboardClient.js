@@ -6,65 +6,34 @@ const DashboardClient = class {
   }
 
   async getDashboards(client) {
-    const mainDashboards = await this.getMainDashboards(client);
-    // If there are currently dashboards and the newly fetched dashboard list is empty, do nothing
-    if (this.dashboards.tabs.length > 0 && mainDashboards.rows.length <= 0)
+    const allDashboards = await this.getAllDashboards(client);
+
+    if (this.dashboards.tabs.length > 0 && allDashboards.rows.length <= 0)
       return;
-    // list of dashboard id's, their names and their tags
-    this.dashboards.tabs = mainDashboards.rows.map((row) => {
-      return { id: row.id, name: row.name };
+    if (this.dashboards.drill_throughs.length > 0) return;
+
+    await allDashboards.rows.forEach(async (row) => {
+      const tags = await row.tags.map((entry) => {
+        return entry.tag;
+      });
+
+      if (!tags.includes(this.drillthroughtag)) {
+        this.dashboards.tabs.push({ id: row.id, name: row.name });
+      } else {
+        this.getExtraTags(row);
+      }
     });
+
     console.log(
       "Successfully fetched " +
         this.dashboards.tabs.length.toString() +
-        " dashboard tab(s)."
+        " dashboard tab(s). and " +
+        this.dashboards.drill_throughs.length.toString() +
+        " drill-through(s)."
     );
-    const drillThroughDashboards = await this.getDrillThroughDashboards(client);
-    if (
-      this.dashboards.drill_throughs.length > 0 &&
-      drillThroughDashboards.rows.length <= 0
-    )
-      return;
-
-    await drillThroughDashboards.rows.forEach((drill_through_dashboard) => {
-      this.getExtraTags(drill_through_dashboard);
-    });
-
-    if (
-      this.dashboards.drill_throughs.length ==
-      drillThroughDashboards.rows.length
-    ) {
-      console.log(
-        "Successfully fetched " +
-          this.dashboards.drill_throughs.length.toString() +
-          " drill-through(s)."
-      );
-    }
   }
 
-  getMainDashboards(client) {
-    return client.get("securable", {
-      where: {
-        type: "dashboard",
-      },
-      options: {
-        public: false,
-      },
-      attributes: ["id", "name"],
-      include: [
-        {
-          model: "Tag",
-          where: {
-            tag: this.tag,
-          },
-          jointype: "inner",
-          attributes: ["id", "tag"],
-        },
-      ],
-    });
-  }
-
-  getDrillThroughDashboards(client) {
+  getAllDashboards(client) {
     return client.get("securable", {
       where: {
         type: "dashboard",
@@ -75,12 +44,12 @@ const DashboardClient = class {
       attributes: ["id", "name"],
       search: {
         match_types: ["tag"],
-        keyphrase: this.drillthroughtag,
+        keyphrase: "auth0-mt",
       },
       include: [
         {
           model: "Tag",
-          attributes: ["id", "tag"],
+          attributes: ["tag"],
         },
       ],
     });
