@@ -1,5 +1,5 @@
 import {
-  dashboardOptions,
+  dashboardElement,
   dashboards,
   selectedDashboard,
   selectDashboard,
@@ -13,73 +13,24 @@ class UI {
 
   initTabs(dashboardsToLoad) {
     let ul = document.querySelector("#tabs");
-    dashboardsToLoad.tabs.forEach((tab, index) => {
+    for (const [slug, dashboard] of Object.entries(dashboardsToLoad)) {
       let li = document.createElement("li");
-      li.id = "tabsList" + tab.name.en.toLowerCase().replaceAll(" ", "_");
+      li.id = "tabsList" + slug;
       li.classList.add("nav-item");
       let a = document.createElement("a");
       a.classList.add("nav-link");
       a.onclick = () => {
-        selectDashboard(
-          tab.name.en.toLowerCase().replaceAll(" ", "_"),
-          li,
-          null,
-          "#dashboard-container"
-        );
+        selectDashboard(slug, li, dashboardElement);
       };
       // Set French dashboard name if existing, else set English name
-      if (dashboardOptions.language == "fr" && tab.name.fr) {
-        a.innerText = tab.name.fr;
-      } else a.innerText = tab.name.en;
-      a.id = tab.name.en.toLowerCase().replaceAll(" ", "_");
-      dashboards[tab.name.en.toLowerCase().replaceAll(" ", "_")] = {
-        id: tab.id,
-        name: tab.name,
-        isLoaded: false,
-        isDrillthrough: false,
-        key: "",
-        token: "",
-      };
+      if (dashboardElement.language == "fr" && dashboard.name.fr) {
+        a.innerText = dashboard.name.fr;
+      } else a.innerText = dashboard.name.en;
+      a.id = slug;
       li.append(a);
       ul.append(li);
-    });
-    let firstDashboard = dashboardsToLoad.tabs[0];
-    selectedDashboard = firstDashboard.name.en
-      .toLowerCase()
-      .replaceAll(" ", "_");
-  }
-
-  showDrillThrough() {
-    let drillThroughContainer = document.querySelector(
-      ".drill-through-container"
-    );
-    drillThroughContainer.classList.remove("invisible");
-    drillThroughContainer.classList.remove("slide-out");
-    drillThroughContainer.classList.add("slide-in");
-  }
-
-  hideDrillThrough(element) {
-    document.querySelectorAll(".nav-item").forEach((el) => {
-      el.classList.remove("active");
-    });
-    element.classList.add("active");
-  }
-
-  back() {
-    // Make drillthrough container disappear
-    document.querySelectorAll(".drill-through-container").forEach((el) => {
-      el.classList.remove("slide-in");
-      el.classList.add("slide-out");
-    });
-    // Disable isLoaded attribute & remove drillthrough dashboard
-    Object.keys(dashboards).forEach((key) => {
-      if (dashboards[key].isLoaded && dashboards[key].isDrillthrough) {
-        dashboards[key].isLoaded = false;
-      }
-    });
-    Cumulio.removeDashboard({
-      container: "#drill-through-dashboard-container",
-    });
+    }
+    selectedDashboard = Object.keys(dashboardsToLoad)[0];
   }
 
   hexToRgb(hex) {
@@ -108,10 +59,10 @@ class UI {
           el.classList.remove("active");
         }
       });
-      if (dashboardOptions) dashboardOptions.language = userLanguage;
+      if (dashboardElement) dashboardElement.language = userLanguage;
     }
-    document.getElementById("back-button").innerHTML =
-      userLanguage === "fr" ? "Retour" : "Back";
+    // document.getElementById("back-button").innerHTML =
+    //   userLanguage === "fr" ? "Retour" : "Back";
     document.getElementById("logoutButton").innerHTML =
       userLanguage === "fr" ? "Déconnecte" : "Log out";
     document.getElementById("welcomeText").innerHTML =
@@ -128,10 +79,7 @@ class UI {
     if (t.getUserProperty(user, "logoUrl"))
       document.getElementById("logo").src = t.getUserProperty(user, "logoUrl");
 
-    dashboardOptions.loader.spinnerColor = t.getUserProperty(
-      user,
-      "base-color"
-    );
+    dashboardElement.loaderSpinnerColor = t.getUserProperty(user, "base-color");
     document.querySelectorAll(".language-btn").forEach((el) => {
       el.style =
         "color: " + t.getUserProperty(user, "base-color") + "!important;";
@@ -162,8 +110,7 @@ class UI {
     selectDashboard(
       selectedDashboard,
       document.getElementById("tabsList" + selectedDashboard),
-      null,
-      "#dashboard-container"
+      dashboardElement
     );
   }
 
@@ -199,9 +146,6 @@ class UI {
           dashboards[child.childNodes[0].id].name.en;
     });
 
-    // Changes language of buttons
-    document.getElementById("back-button").innerHTML =
-      language === "fr" ? "Retour" : "Back";
     document.getElementById("logoutButton").innerHTML =
       language === "fr" ? "Déconnecte" : "Log out";
 
