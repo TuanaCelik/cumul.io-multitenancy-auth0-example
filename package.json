@@ -2,9 +2,12 @@
   "name": "cumul.io-integration",
   "version": "1.0.0",
   "description": "Cumul.io sample integration",
+  "license": "MIT",
   "main": "server.js",
   "scripts": {
-    "start": "npm-run-all --parallel watch:server watch:frontend",
+    "start": "node server.js",
+    "build": "webpack",
+    "dev": "npm-run-all --parallel watch:server watch:frontend",
     "watch:server": "nodemon server.js --watch server",
     "watch:frontend": "webpack --watch"
   },
