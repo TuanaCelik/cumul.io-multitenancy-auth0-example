@@ -50,7 +50,7 @@ app.get("/authorization", checkJwt, (req, res) => {
     username: req.user[authConfig.namespace + "firstName"],
     name: req.user[authConfig.namespace + "firstName"],
     email: req.user[authConfig.namespace + "email"],
-    integration_id: "a11b22e0-31bb-4bc2-908a-7426545cb14c",
+    integration_id: process.env.INTEGRATION_ID,
     suborganization:
       req.user[authConfig.namespace + "parameters"]["companyName"][0],
     role: req.user[authConfig.namespace + "role"],

@@ -102,11 +102,12 @@ You can create as many dashboards as you'd like. Then, you should add the dashbo
 
 `npm install`
 
-Create a file called `.env` in the root directory with two keys. Replace the `CUMULIO_API_KEY` & `CUMULIO_API_TOKEN` with one from your Cumul.io account. You can create one in your Profile settings under API Tokens:
+Create a file called `.env` in the root directory with two keys. Replace the `CUMULIO_API_KEY` & `CUMULIO_API_TOKEN` with ones from your Cumul.io account. You can create them in your Profile settings under API Tokens. Also add the `INTEGRATION_ID` for the integration you will be using in this app:
 
 ```
 CUMULIO_API_KEY=XXX
 CUMULIO_API_TOKEN=XXX
+INTEGRATION_ID=XXX
 ```
 
 ## IV. Adapt `server.js` according to your needs
